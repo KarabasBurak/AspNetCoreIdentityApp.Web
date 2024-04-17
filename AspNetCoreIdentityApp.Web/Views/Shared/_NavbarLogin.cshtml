@@ -1,0 +1,23 @@
+﻿
+
+
+@if (User.Identity!.IsAuthenticated) // Login ise nu kısım görünecek
+{
+    <ul class="navbar-nav me-0">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                @User.Identity.Name
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Logout</a></li>
+            </ul>
+        </li>
+    </ul>
+}
+
+else
+{
+    <a class="btn btn-outline-success mx-2" asp-controller="Login" asp-action="Login">Login</a>
+
+    <a class="btn btn-outline-success" asp-controller="Register" asp-action="SignUp">Sign Up</a>
+}

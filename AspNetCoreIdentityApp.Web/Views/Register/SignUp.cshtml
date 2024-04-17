@@ -5,7 +5,9 @@
     ViewData["Title"] = "SignUp";
 }
 
-
+@section Scripts{
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
 
 <div class="row">
     <div class="col-md-6 offset-md-3">
@@ -18,11 +20,16 @@
             </div>
         }
 
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+
         <form asp-controller="Register" asp-action="SignUp" method="post">
             <div class="row mb-3">
                 <label for="Username" class="col-sm-4 col-form-label" asp-for="UserName"></label>
                 <div class="col-sm-8">
                     <input asp-for="UserName" class="form-control">
+                    <span class="text-danger" asp-validation-for="UserName"></span>
                 </div>
             </div>
             
@@ -30,6 +37,7 @@
                 <label for="Username" class="col-sm-4 col-form-label" asp-for="Email"></label>
                 <div class="col-sm-8">
                     <input type="email" asp-for="Email" class="form-control">
+                    <span class="text-danger" asp-validation-for="Email"></span>
                 </div>
             </div>
 
@@ -37,6 +45,7 @@
                 <label for="Phone" class="col-sm-4 col-form-label" asp-for="Phone"></label>
                 <div class="col-sm-8">
                     <input asp-for="Phone" class="form-control">
+                    <span class="text-danger" asp-validation-for="Phone"></span>
                 </div>
             </div>
 
@@ -44,6 +53,7 @@
                 <label for="Password" class="col-sm-4 col-form-label" asp-for="Password"></label>
                 <div class="col-sm-8">
                     <input type="password" asp-for="Password" class="form-control">
+                    <span class="text-danger" asp-validation-for="Password"></span>
                 </div>
             </div>
 
@@ -51,6 +61,7 @@
                 <label typeof="password" for="ConfirmPassword" class="col-sm-4 col-form-label" asp-for="ConfirmPassword"></label>
                 <div class="col-sm-8">
                     <input type="password"  asp-for="ConfirmPassword" class="form-control">
+                    <span class="text-danger" asp-validation-for="ConfirmPassword"></span>
                 </div>
             </div>
 

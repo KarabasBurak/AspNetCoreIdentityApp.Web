@@ -1,3 +1,4 @@
+﻿using AspNetCoreIdentityApp.Web.Extensions;
 using AspNetCoreIdentityApp.Web.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,16 +12,18 @@ builder.Services.AddDbContext<AppDbContext>(opts =>
     opts.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection"));
 });
 
-builder.Services.AddIdentity<AppUser,AppRole>().AddEntityFrameworkStores<AppDbContext>();
+builder.Services.AddIdentityExtension();
 
+builder.Services.ConfigureApplicationCookie(opt =>
+{
+    var cookieBuilder=new CookieBuilder();
+    cookieBuilder.Name = "IdentityAppCookie";
+    opt.LoginPath = new PathString("/Login/Login");
+    opt.Cookie=cookieBuilder;
+    opt.ExpireTimeSpan=TimeSpan.FromDays(60); // Cookie süresi 60 gün olarak belirlendi
+    opt.SlidingExpiration=true; // Kullanıcı her giriş yaptığında 60 ekleme için yazıldı. Yani; 30. gün giriş yaptı 90 günlük cookie olur
 
-
-
-
-
-
-
-
+});
 
 var app = builder.Build();
 
@@ -38,6 +41,10 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",

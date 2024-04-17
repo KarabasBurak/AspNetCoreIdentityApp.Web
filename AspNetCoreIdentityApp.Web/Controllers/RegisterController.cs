@@ -22,13 +22,19 @@ namespace AspNetCoreIdentityApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> SignUp(RegisterDto registerDto)
         {
-           var result=await _userManager.CreateAsync(new()
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            var result=await _userManager.CreateAsync(new()
             {
                 UserName = registerDto.UserName,
                 Email = registerDto.Email,
                 PhoneNumber=registerDto.Phone,
                 
             }, registerDto.Password);
+
 
             if(result.Succeeded)
             {

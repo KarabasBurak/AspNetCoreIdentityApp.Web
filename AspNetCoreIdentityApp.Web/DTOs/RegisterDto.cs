@@ -20,6 +20,7 @@ namespace AspNetCoreIdentityApp.Web.DTOs
         [Display(Name ="Username:")]
         public string UserName { get; set; }
 
+        [EmailAddress(ErrorMessage ="Email formatı yanlış")]
         [Required(ErrorMessage = "Email boş olamaz")]
         [Display(Name = "Email:")]
         public string Email { get; set; }
@@ -32,6 +33,7 @@ namespace AspNetCoreIdentityApp.Web.DTOs
         [Display(Name = "Password:")]
         public string Password { get; set; }
 
+        [Compare(nameof(Password),ErrorMessage ="Şifre Aynı Değil")]
         [Required(ErrorMessage = "Şifrenizi tekrar giriniz")]
         [Display(Name = "Confirm Password:")]
         public string ConfirmPassword { get; set; }
