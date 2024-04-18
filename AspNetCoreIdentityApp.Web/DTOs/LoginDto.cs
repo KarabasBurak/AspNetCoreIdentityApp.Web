@@ -20,11 +20,12 @@ namespace AspNetCoreIdentityApp.Web.DTOs
         public string Email { get; set; }
 
 
+        [DataType(DataType.Password)]
         [Required(ErrorMessage = "Lütfen şifrenizi giriniz")]
         [Display(Name = "Password:")]
         public string Password { get; set; }
 
-        [Display(Name = "Remember Me:")]
+        [Display(Name = "Remember Me")]
         public bool RememberMe { get; set; }
     }
 }

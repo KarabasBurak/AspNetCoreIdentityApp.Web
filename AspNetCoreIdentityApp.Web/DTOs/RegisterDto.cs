@@ -29,10 +29,12 @@ namespace AspNetCoreIdentityApp.Web.DTOs
         [Display(Name = "Phone:")]
         public string Phone { get; set; }
 
+        [DataType(DataType.Password)]
         [Required(ErrorMessage = "Şifre boş olamaz")]
         [Display(Name = "Password:")]
         public string Password { get; set; }
 
+        [DataType(DataType.Password)]
         [Compare(nameof(Password),ErrorMessage ="Şifre Aynı Değil")]
         [Required(ErrorMessage = "Şifrenizi tekrar giriniz")]
         [Display(Name = "Confirm Password:")]

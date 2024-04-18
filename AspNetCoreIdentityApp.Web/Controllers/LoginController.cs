@@ -29,7 +29,7 @@ namespace AspNetCoreIdentityApp.Web.Controllers
             // returnUrl; kullanıcı gitmek istediği sayfaya ulaşmak için Login olması gerekiyorsa önce login olacak sonra otomatik olarak o sayfaya yönlendirilecek. Kullanıcı için pratik olacak
             // Bu kullanım aslında "if" bloğunu temsil ediyor. returnUrl boş ise Url.Action("Index","Home") kısmı çalışacak. Ama returnUrl boş değilse ise returnUrl kendi değeri çalışacak
 
-            returnUrl = returnUrl ?? Url.Action("Privacy", "Home"); 
+            returnUrl ??= Url.Action("Privacy", "Home"); 
             var hasUser=await _userManager.FindByEmailAsync(loginDto.Email); // Kullanıcının girdiği emaile göre AppUser tablosunda kişiyi bulduk hasUser nesnesine atadık
 
             if(hasUser == null)
@@ -48,7 +48,7 @@ namespace AspNetCoreIdentityApp.Web.Controllers
 
             if (loginResult.Succeeded)
             {
-                return Redirect(returnUrl);
+                return Redirect(returnUrl!);
             }
 
             ModelState.AddModelErrorList(new List<string>() { $"Email veya Şifre Yanlış",$"Başarısız Giriş Sayısı: {await _userManager.GetAccessFailedCountAsync(hasUser)}" });

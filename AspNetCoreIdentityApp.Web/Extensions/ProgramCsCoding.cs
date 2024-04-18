@@ -1,7 +1,7 @@
 ﻿using AspNetCoreIdentityApp.Web.Localizations;
 using AspNetCoreIdentityApp.Web.Models;
 using AspNetCoreIdentityApp.Web.Validations.CustomValidations;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Identity;
 
 namespace AspNetCoreIdentityApp.Web.Extensions
 {
@@ -9,6 +9,11 @@ namespace AspNetCoreIdentityApp.Web.Extensions
     {
         public static void AddIdentityExtension(this IServiceCollection services)
         {
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromHours(2);
+            });
+
             services.AddIdentity<AppUser, AppRole>(opts =>
             {
                 opts.User.RequireUniqueEmail = true;
@@ -26,7 +31,8 @@ namespace AspNetCoreIdentityApp.Web.Extensions
                 .AddErrorDescriber<LocalizationIdentityErrorDescriber>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddPasswordValidator<PasswordValidator>()
-                .AddUserValidator<UserValidator>();
+                .AddUserValidator<UserValidator>()
+                .AddDefaultTokenProviders();
         }
     }
 }
