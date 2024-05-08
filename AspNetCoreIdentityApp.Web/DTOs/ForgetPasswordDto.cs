@@ -7,6 +7,6 @@ namespace AspNetCoreIdentityApp.Web.DTOs
         [EmailAddress(ErrorMessage = "Email formatı yanlış")]
         [Required(ErrorMessage = "Email boş olamaz")]
         [Display(Name = "Email:")]
-        public string Email { get; set; }
+        public string Email { get; set; } = null;
     }
 }

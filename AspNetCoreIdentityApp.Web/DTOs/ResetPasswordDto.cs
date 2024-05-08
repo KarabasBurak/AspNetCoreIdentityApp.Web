@@ -7,12 +7,12 @@ namespace AspNetCoreIdentityApp.Web.DTOs
         [DataType(DataType.Password)]
         [Required(ErrorMessage = "Şifre boş olamaz")]
         [Display(Name = "New Password:")]
-        public string Password { get; set; }
+        public string Password { get; set; } = null!;
 
         [DataType(DataType.Password)]
         [Compare(nameof(Password), ErrorMessage = "Şifre Aynı Değil")]
         [Required(ErrorMessage = "Şifrenizi tekrar giriniz")]
         [Display(Name = "New Password Confirm:")]
-        public string ConfirmPassword { get; set; }
+        public string ConfirmPassword { get; set; }=null!;
     }
 }

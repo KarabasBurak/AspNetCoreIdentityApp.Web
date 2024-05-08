@@ -12,5 +12,13 @@ namespace AspNetCoreIdentityApp.Web.Extenisons
                 modelState.AddModelError(string.Empty, x);
             });
         }
+
+        public static void AddModelErrorList(this ModelStateDictionary modelState, IEnumerable<IdentityError> errors)
+        {
+            errors.ToList().ForEach(x =>
+            {
+                modelState.AddModelError(string.Empty, x.Description);
+            });
+        }
     }
 }

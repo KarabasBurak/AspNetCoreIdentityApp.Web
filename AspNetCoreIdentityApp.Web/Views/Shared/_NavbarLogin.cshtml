@@ -1,7 +1,7 @@
 ﻿
 
 
-@if (User.Identity!.IsAuthenticated) // Login ise nu kısım görünecek
+@if (User.Identity!.IsAuthenticated) // Login ise bu kısım görünecek
 {
     <ul class="navbar-nav me-0">
         <li class="nav-item dropdown">
@@ -9,6 +9,9 @@
                 @User.Identity.Name
             </a>
             <ul class="dropdown-menu">
+                <li><a class="dropdown-item" asp-controller="User" asp-action="GetUserInfo" >Profile</a></li>
+                <li><a class="dropdown-item" asp-controller="User" asp-action="PasswordChange">Password Settings</a></li>
+                <li><a class="dropdown-item" asp-controller="User" asp-action="UserEdit">Profile Edit</a></li>
                 <li><a class="dropdown-item" asp-controller="User" asp-action="Logout" >Logout</a></li>
             </ul>
         </li>

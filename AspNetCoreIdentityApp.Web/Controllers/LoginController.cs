@@ -26,6 +26,11 @@ namespace AspNetCoreIdentityApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginDto loginDto, string returnUrl=null)
         {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
             // returnUrl; kullanıcı gitmek istediği sayfaya ulaşmak için Login olması gerekiyorsa önce login olacak sonra otomatik olarak o sayfaya yönlendirilecek. Kullanıcı için pratik olacak
             // Bu kullanım aslında "if" bloğunu temsil ediyor. returnUrl boş ise Url.Action("Index","Home") kısmı çalışacak. Ama returnUrl boş değilse ise returnUrl kendi değeri çalışacak
 

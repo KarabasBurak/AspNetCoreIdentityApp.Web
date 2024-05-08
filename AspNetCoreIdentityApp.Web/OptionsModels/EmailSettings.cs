@@ -2,9 +2,9 @@
 {
     public class EmailSettings
     {
-        public string Host { get; set; }
-        public string Password { get; set; }
-        public string Email { get; set;}
+        public string Host { get; set; } = null;
+        public string Password { get; set; } = null;
+        public string Email { get; set;} = null;
     }
 }
 // appsettings.json içinde tanımladığımız mail bilgilerini tip güvenli bir sınıf üzerinden okumak için OptionsModels sınıfı oluşturuldu

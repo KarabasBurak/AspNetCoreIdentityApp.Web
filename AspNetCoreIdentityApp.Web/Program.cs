@@ -2,7 +2,9 @@
 using AspNetCoreIdentityApp.Web.Models;
 using AspNetCoreIdentityApp.Web.OptionsModels;
 using AspNetCoreIdentityApp.Web.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +16,19 @@ builder.Services.AddDbContext<AppDbContext>(opts =>
     opts.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection"));
 });
 
+// SecurityStamp kısmını tanımladık
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.FromMinutes(30);
+});
+
+builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
+
+
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings")); // Herhangi bir class'ın constructorında IOptions<EmailSettings> görürsen dataları GetSection'dan oku
 builder.Services.AddIdentityExtension();
 builder.Services.AddScoped<IEmailService, EmailService>();
+
 
 builder.Services.ConfigureApplicationCookie(opt =>
 {
