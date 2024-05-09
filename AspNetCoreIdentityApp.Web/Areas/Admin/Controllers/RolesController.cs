@@ -3,6 +3,7 @@ using AspNetCoreIdentityApp.Web.Extenisons;
 using AspNetCoreIdentityApp.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 
 namespace AspNetCoreIdentityApp.Web.Areas.Admin.Controllers
@@ -38,9 +39,9 @@ namespace AspNetCoreIdentityApp.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> RoleCreate(RoleCreateDto roleCreateDto)
         {
-            var newRole = new AppRole() 
-            { 
-                Name = roleCreateDto.Name 
+            var newRole = new AppRole()
+            {
+                Name = roleCreateDto.Name
             };
             var result = await _roleManager.CreateAsync(newRole);
 
@@ -57,19 +58,19 @@ namespace AspNetCoreIdentityApp.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> RoleUpdate(string id)
         {
-            var roleUpdate=await _roleManager.FindByIdAsync(id);
+            var roleUpdate = await _roleManager.FindByIdAsync(id);
             if (roleUpdate == null)
             {
                 throw new Exception("Güncellenecek rol bulunamamıştır");
             }
-            return View(new RoleUpdateDto() { Id=roleUpdate.Id, Name=roleUpdate.Name});
+            return View(new RoleUpdateDto() { Id = roleUpdate.Id, Name = roleUpdate.Name });
         }
 
         [HttpPost]
         public async Task<IActionResult> RoleUpdate(RoleUpdateDto roleUpdateDto)
         {
-            var roleUpdate=await _roleManager.FindByIdAsync(roleUpdateDto.Id);
-            if(roleUpdate == null)
+            var roleUpdate = await _roleManager.FindByIdAsync(roleUpdateDto.Id);
+            if (roleUpdate == null)
             {
                 throw new Exception("Güncellenecek rol bulunamamıştır");
             }
@@ -83,7 +84,7 @@ namespace AspNetCoreIdentityApp.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> RoleDelete(string id)
         {
-            var roleDelete=await _roleManager.FindByIdAsync(id);
+            var roleDelete = await _roleManager.FindByIdAsync(id);
             if (roleDelete == null)
             {
                 throw new Exception("Silinecek Rol Bulunamadı");
@@ -101,38 +102,53 @@ namespace AspNetCoreIdentityApp.Web.Areas.Admin.Controllers
             return RedirectToAction(nameof(RolesController.Index));
         }
 
+
         public async Task<IActionResult> AssignRoleToUser(string id)
         {
             var currentUser = await _userManager.FindByIdAsync(id); // Kullanıcıları çektik
-            var currentRoles=await _roleManager.Roles.ToListAsync(); // Mevcut rolleri çektik
+            ViewBag.userId = id;
+            var currentRoles = await _roleManager.Roles.ToListAsync(); // Mevcut rolleri çektik
             var userRoles = await _userManager.GetRolesAsync(currentUser); // UserManager sınıfındaki GetRolesAsync metodu ile kullanıcılara rol atanmış rolleri çekiyoruz
-            var assignRoleToUserDtoList= new List<AssignRoleToUserDto>(); // AssignRoleToUserDto sınıfındaki nesnelerden nesne örneği oluşturduk
-            
+            var assignRoleToUserDtoList = new List<AssignRoleToUserDto>(); // AssignRoleToUserDto sınıfındaki nesnelerden nesne örneği oluşturduk
 
-            foreach(var role in currentRoles)  // Mevcut rolleri döngüye aldık
+
+            foreach (var role in currentRoles)  // Mevcut rolleri döngüye aldık
             {
-                var assignRole = new AssignRoleToUserDto() //AssignRoleToUserDto sınıfındaki Id ve Name proplara atama yaptık
+                var assignRole = new AssignRoleToUserDto() //AssignRoleToUserDto sınıfındaki Id ve Name proplara değerleri atadık
                 {
-                    Id= role.Id,
-                    Name= role.Name,
+                    Id = role.Id,
+                    Name = role.Name,
                 };
 
                 if (userRoles.Contains(role.Name)) // Kullanıcının rolüne bir rol ataması yapılmış mı kontrol ediyoruz.
                 {
-                    assignRole.Exist = true;  
+                    assignRole.Exist = true;
                 }
 
-                assignRoleToUserDtoList.Add(assignRole);  // Eğer rol atanmamışsa kullanıcıya rol ekliyoruz.
+                assignRoleToUserDtoList.Add(assignRole);  // assignRole nesnesindeki değerleri listeliyoruz
 
             }
 
             return View(assignRoleToUserDtoList);
         }
 
-        public async Task<IActionResult> AssignRoleToUser(List<AssignRoleToUserDto> assignRoleToUserDto)
-        {
-            return View();
-        }
 
+        [HttpPost]
+        public async Task<IActionResult> AssignRoleToUser(string userId, List<AssignRoleToUserDto> assignRoleToUserDto)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            foreach (var role in assignRoleToUserDto)
+
+                if (role.Exist)
+                {
+                    await _userManager.AddToRoleAsync(user, role.Name);
+                }
+                else
+                {
+                    await _userManager.RemoveFromRoleAsync(user, role.Name);
+                }
+
+            return RedirectToAction(nameof(HomeController.GetUserList),"Home");
+        }
     }
 }
