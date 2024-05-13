@@ -1,11 +1,7 @@
-﻿
-
-using Humanizer;
-using System.Net.Mail;
+﻿using System.Net.Mail;
 using System.Net;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using AspNetCoreIdentityApp.Web.OptionsModels;
+using AspNetCoreIdentityApp.Core.OptionsModels;
 
 namespace AspNetCoreIdentityApp.Web.Services
 {

@@ -1,7 +1,8 @@
-﻿using AspNetCoreIdentityApp.Web.Models;
+﻿using AspNetCoreIdentityApp.Core.Models;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
-namespace AspNetCoreIdentityApp.Web.DTOs
+namespace AspNetCoreIdentityApp.Core.DTOs
 {
     public class UserEditDto
     {
@@ -27,11 +28,11 @@ namespace AspNetCoreIdentityApp.Web.DTOs
 
 
         [Display(Name = "City:")]
-        public string City { get; set; }
+        public string? City { get; set; }
 
 
         [Display(Name = "Profile Image:")]
-        public IFormFile Picture { get; set; }
+        public IFormFile? Picture { get; set; }
 
         [Display(Name = "Gender:")]
         public Gender? Gender { get; set; }

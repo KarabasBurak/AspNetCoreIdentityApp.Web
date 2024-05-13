@@ -1,7 +1,7 @@
-﻿using AspNetCoreIdentityApp.Web.ClaimProviders;
+﻿using AspNetCoreIdentityApp.Core.OptionsModels;
+using AspNetCoreIdentityApp.Repository.Models;
+using AspNetCoreIdentityApp.Web.ClaimProviders;
 using AspNetCoreIdentityApp.Web.Extensions;
-using AspNetCoreIdentityApp.Web.Models;
-using AspNetCoreIdentityApp.Web.OptionsModels;
 using AspNetCoreIdentityApp.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -15,7 +15,10 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AppDbContext>(opts =>
 {
-    opts.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection"));
+    opts.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection"), options =>
+    {
+        options.MigrationsAssembly("AspNetCoreIdentity.Repository");
+    });
 });
 
 // SecurityStamp kısmını tanımladık

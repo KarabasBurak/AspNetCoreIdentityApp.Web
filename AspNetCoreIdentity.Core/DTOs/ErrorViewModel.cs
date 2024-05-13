@@ -1,4 +1,4 @@
-namespace AspNetCoreIdentityApp.Web.Models
+namespace AspNetCoreIdentity.Core.DTOs
 {
     public class ErrorViewModel
     {

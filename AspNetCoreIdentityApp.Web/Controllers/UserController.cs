@@ -1,7 +1,7 @@
-﻿using AspNetCoreIdentityApp.Web.DTOs;
+﻿using AspNetCoreIdentityApp.Core.DTOs;
+using AspNetCoreIdentityApp.Core.Models;
 using AspNetCoreIdentityApp.Web.Extenisons;
 using AspNetCoreIdentityApp.Web.Models;
-using Azure.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

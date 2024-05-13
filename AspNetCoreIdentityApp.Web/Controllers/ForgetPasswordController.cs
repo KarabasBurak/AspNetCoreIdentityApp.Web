@@ -1,9 +1,8 @@
-﻿using AspNetCoreIdentityApp.Web.DTOs;
+﻿using AspNetCoreIdentityApp.Core.DTOs;
 using AspNetCoreIdentityApp.Web.Models;
 using AspNetCoreIdentityApp.Web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Common;
 
 namespace AspNetCoreIdentityApp.Web.Controllers
 {

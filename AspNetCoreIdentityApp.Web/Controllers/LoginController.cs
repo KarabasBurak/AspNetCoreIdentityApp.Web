@@ -1,6 +1,5 @@
-﻿using AspNetCoreIdentityApp.Web.DTOs;
+﻿using AspNetCoreIdentityApp.Core.DTOs;
 using AspNetCoreIdentityApp.Web.Extenisons;
-using AspNetCoreIdentityApp.Web.Extensions;
 using AspNetCoreIdentityApp.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

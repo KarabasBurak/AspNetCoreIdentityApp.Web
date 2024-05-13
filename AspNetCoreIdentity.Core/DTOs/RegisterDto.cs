@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AspNetCoreIdentityApp.Web.DTOs
+namespace AspNetCoreIdentityApp.Core.DTOs
 {
     public class RegisterDto
     {

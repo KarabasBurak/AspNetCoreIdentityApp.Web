@@ -1,7 +1,5 @@
-﻿using AspNetCoreIdentityApp.Web.DTOs;
-using AspNetCoreIdentityApp.Web.Models;
+﻿using AspNetCoreIdentityApp.Web.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace AspNetCoreIdentityApp.Web.Validations.CustomValidations
 {

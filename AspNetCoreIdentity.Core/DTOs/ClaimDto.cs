@@ -1,4 +1,4 @@
-﻿namespace AspNetCoreIdentityApp.Web.DTOs
+﻿namespace AspNetCoreIdentityApp.Core.DTOs
 {
     public class ClaimDto
     {
