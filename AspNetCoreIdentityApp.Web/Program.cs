@@ -1,7 +1,9 @@
-﻿using AspNetCoreIdentityApp.Web.Extensions;
+﻿using AspNetCoreIdentityApp.Web.ClaimProviders;
+using AspNetCoreIdentityApp.Web.Extensions;
 using AspNetCoreIdentityApp.Web.Models;
 using AspNetCoreIdentityApp.Web.OptionsModels;
 using AspNetCoreIdentityApp.Web.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -28,13 +30,24 @@ builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings")); // Herhangi bir class'ın constructorında IOptions<EmailSettings> görürsen dataları GetSection'dan oku
 builder.Services.AddIdentityExtension();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IClaimsTransformation, UserClaimProvider>();
 
+// Policy ile Yetkilendirme
+builder.Services.AddAuthorization(opts =>
+{
+    opts.AddPolicy("AnkaraPolicy", policy =>
+    {
+        policy.RequireClaim("City", "Ankara", "Manisa");
+        
+    });
+});
 
 builder.Services.ConfigureApplicationCookie(opt =>
 {
     var cookieBuilder = new CookieBuilder();
     cookieBuilder.Name = "IdentityAppCookie";
     opt.LoginPath = new PathString("/Login/Login");
+    opt.AccessDeniedPath = new PathString("/Access/AccessDenied");
     opt.Cookie=cookieBuilder;
     opt.ExpireTimeSpan=TimeSpan.FromDays(60); // Cookie süresi 60 gün olarak belirlendi
     opt.SlidingExpiration=true; // Kullanıcı her giriş yaptığında 60 ekleme için yazıldı. Yani; 30. gün giriş yaptı 90 günlük cookie olur

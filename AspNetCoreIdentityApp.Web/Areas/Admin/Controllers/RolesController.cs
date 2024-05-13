@@ -1,6 +1,7 @@
 ﻿using AspNetCoreIdentityApp.Web.Areas.Admin.Models;
 using AspNetCoreIdentityApp.Web.Extenisons;
 using AspNetCoreIdentityApp.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AspNetCoreIdentityApp.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class RolesController : Controller
     {
         private readonly UserManager<AppUser> _userManager;
@@ -20,6 +22,7 @@ namespace AspNetCoreIdentityApp.Web.Areas.Admin.Controllers
             _roleManager = roleManager;
         }
 
+        
         public async Task<IActionResult> Index()
         {
             var roles = await _roleManager.Roles.Select(x => new RoleListDto()
@@ -36,6 +39,7 @@ namespace AspNetCoreIdentityApp.Web.Areas.Admin.Controllers
             return View();
         }
 
+        
         [HttpPost]
         public async Task<IActionResult> RoleCreate(RoleCreateDto roleCreateDto)
         {
@@ -66,6 +70,7 @@ namespace AspNetCoreIdentityApp.Web.Areas.Admin.Controllers
             return View(new RoleUpdateDto() { Id = roleUpdate.Id, Name = roleUpdate.Name });
         }
 
+        
         [HttpPost]
         public async Task<IActionResult> RoleUpdate(RoleUpdateDto roleUpdateDto)
         {
@@ -82,6 +87,7 @@ namespace AspNetCoreIdentityApp.Web.Areas.Admin.Controllers
             return View();
         }
 
+        
         public async Task<IActionResult> RoleDelete(string id)
         {
             var roleDelete = await _roleManager.FindByIdAsync(id);
