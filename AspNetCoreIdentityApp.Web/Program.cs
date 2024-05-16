@@ -2,11 +2,13 @@
 using AspNetCoreIdentityApp.Repository.Models;
 using AspNetCoreIdentityApp.Web.ClaimProviders;
 using AspNetCoreIdentityApp.Web.Extensions;
-using AspNetCoreIdentityApp.Web.Services;
+using AspNetCoreIdentityApp.Service.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using AspNetCoreIdentity.Service;
+using AspNetCoreIdentity.Service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +36,7 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 builder.Services.AddIdentityExtension();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IClaimsTransformation, UserClaimProvider>();
+builder.Services.AddScoped<IUserService, UserService>();    
 
 // Policy ile Yetkilendirme
 builder.Services.AddAuthorization(opts =>

@@ -1,6 +1,6 @@
 ﻿using AspNetCoreIdentityApp.Core.DTOs;
 using AspNetCoreIdentityApp.Web.Models;
-using AspNetCoreIdentityApp.Web.Services;
+using AspNetCoreIdentityApp.Service.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

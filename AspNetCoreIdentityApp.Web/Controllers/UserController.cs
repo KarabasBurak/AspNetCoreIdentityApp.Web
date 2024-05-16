@@ -1,4 +1,5 @@
-﻿using AspNetCoreIdentityApp.Core.DTOs;
+﻿using AspNetCoreIdentity.Service;
+using AspNetCoreIdentityApp.Core.DTOs;
 using AspNetCoreIdentityApp.Core.Models;
 using AspNetCoreIdentityApp.Web.Extenisons;
 using AspNetCoreIdentityApp.Web.Models;
@@ -17,36 +18,27 @@ namespace AspNetCoreIdentityApp.Web.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly IFileProvider _fileProvider;
-        public UserController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, IFileProvider fileProvider)
+        private string userName => User.Identity.Name; // Lamda ile tanımlamamız Get olan metodu olan bir property anlamına geliyor
+        private readonly IUserService _userService;
+        public UserController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, IFileProvider fileProvider, IUserService userService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _fileProvider = fileProvider;
+            _userService = userService;
         }
 
         public async Task<IActionResult> GetUserInfo()
         {
-            var currentUser = (await _userManager.FindByNameAsync(User.Identity!.Name!))!;
-            if (currentUser == null)
-            {
-                ModelState.AddModelError(string.Empty, "Kullanıcı bulunamadı");
-            }
-
-            var userDto = new AppUserDto
-            {
-                Email = currentUser.Email,
-                UserName = currentUser.UserName,
-                PhoneNumber = currentUser.PhoneNumber,
-                PictureUrl=currentUser.Picture
-            };
-            return View(userDto);
+            var result = await _userService.GetUserDtoByUserNameAsync(userName);
+            return View(result);
         }
 
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Index","Home");
-        }
+            await _userService.LogoutAsync();
+            return RedirectToAction("Index", "Home");
+        } 
 
         public IActionResult PasswordChange()
         {
@@ -57,141 +49,75 @@ namespace AspNetCoreIdentityApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> PasswordChange(PasswordChangeDto passwordChangeDto)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View();
             }
-            
-            var user=(await _userManager.FindByNameAsync(User.Identity!.Name!))!; // Şifresini değiştirecek kullanıcıyı belirledik.
 
-            var checkOldPassword = await _userManager.CheckPasswordAsync(user, passwordChangeDto.PasswordOld); // belirlenen kullanıcının mevcut şifresini aldık
+            var responsePassword = await _userService.CheckPasswordAsync(userName, passwordChangeDto.PasswordOld);
 
-            if(!checkOldPassword) // mevcut şifrenin doğru/yanlış durumunu kontrol ettik.
+            if (!responsePassword) // mevcut şifrenin doğru/yanlış durumunu kontrol ettik. yanlış ise if içi çalışacak
             {
                 ModelState.AddModelError(string.Empty, "Mevcut şifreniz yanlış");
                 return View();
             }
 
-            var resultChangePassword=await _userManager.ChangePasswordAsync(user,passwordChangeDto.PasswordOld,passwordChangeDto.PasswordNew);
-
-            if (!resultChangePassword.Succeeded)
+            var (isSuccess, errors)=await _userService.ChangePasswordAsync(userName, passwordChangeDto.PasswordOld, passwordChangeDto.PasswordNew);
+            if (!isSuccess)
             {
-                ModelState.AddModelErrorList(resultChangePassword.Errors);
+                ModelState.AddModelErrorList(errors);
                 return View();
             }
 
-            await _userManager.UpdateSecurityStampAsync(user);
-            await _signInManager.SignOutAsync();
-            await _signInManager.PasswordSignInAsync(user, passwordChangeDto.PasswordNew, true, false);
-
             TempData["SuccessMessage"] = "Şifreniz başarılı bir şekilde değiştirilmiştir";
-
 
             return View();
 
         }
 
-        
+
         public async Task<IActionResult> UserEdit()
         {
-            ViewBag.GenderList=new SelectList(Enum.GetNames(typeof(Gender)));
+            ViewBag.GenderList = _userService.GetGenderSelectList();
 
-            var user = (await _userManager.FindByNameAsync(User.Identity!.Name))!;
-            var userDto = new UserEditDto()
-            {
-                UserName = user.UserName!,
-                Email = user.Email!,
-                Phone=user.PhoneNumber!,
-                BirthDate=user.BirthDate,
-                City=user.City,
-                Gender=user.Gender,
-            };
+            var response = await _userService.GetUserEditDtoAsync(userName);
 
-            return View(userDto);
+            return View(response);
         }
 
         [HttpPost]
         public async Task<IActionResult> UserEdit(UserEditDto userEditDto)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View();
             }
 
-            var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
+            var (isSuccess,errors) = await _userService.EditUserAsync(userEditDto,userName);
 
-            user.UserName= userEditDto.UserName;
-            user.Email= userEditDto.Email;
-            user.BirthDate= userEditDto.BirthDate;
-            user.City= userEditDto.City;
-            user.Gender= userEditDto.Gender;
-            user.PhoneNumber=userEditDto.Phone;
-
-            if(userEditDto.Picture != null && userEditDto.Picture.Length>0)
+            if(!isSuccess)
             {
-                var wwwrootFolder = _fileProvider.GetDirectoryContents("wwwroot");
-
-                var randomFileName = $"{Guid.NewGuid()}{Path.GetExtension(userEditDto.Picture.FileName)}";
-
-                var newPicturePath=Path.Combine(wwwrootFolder.First(x=>x.Name=="userPictures").PhysicalPath!,randomFileName);
-
-                using var stream = new FileStream(newPicturePath, FileMode.Create);
-
-                await userEditDto.Picture.CopyToAsync(stream);
-
-                user.Picture = randomFileName;
-            }
-
-            var updateUser=await _userManager.UpdateAsync(user);
-            if (!updateUser.Succeeded)
-            {
-                ModelState.AddModelErrorList(updateUser.Errors);
+                ModelState.AddModelErrorList(errors);
                 return View();
+
             }
-
-            await _userManager.UpdateSecurityStampAsync(user);
-            await _signInManager.SignOutAsync();
-
-            if (userEditDto.BirthDate.HasValue)
-            {
-                await _signInManager.SignInWithClaimsAsync(user, true, new[] { new Claim("birthdate", user.BirthDate!.Value.ToString()) });
-            }
-
-            else
-            {
-                await _signInManager.SignInAsync(user, true);
-            }
-
 
             TempData["SuccesMessage"] = "Bilgileriniz güncellenmiştir";
 
-            var userDto = new UserEditDto()
-            {
-                UserName = user.UserName,
-                Email = user.Email,
-                Phone = user.PhoneNumber,
-                BirthDate = user.BirthDate,
-                City = user.City,
-                Gender = user.Gender,
-            };
+            var response = await _userService.GetUserEditDtoAsync(userName);
 
-            return View(userDto);
+            return View(response);
         }
 
         [HttpGet]
         public IActionResult Claims()
         {
-            var userClaimList = User.Claims.Select(x => new ClaimDto()
-            {
-                Issuer = x.Issuer,
-                Type = x.Type,
-                Value = x.Value
-            }).ToList();
+            var response = _userService.GetClaims(User);
 
-            return View(userClaimList);
+            return View(response);
         }
 
-        [Authorize(Policy ="AnkaraPolicy")]
+        [Authorize(Policy = "AnkaraPolicy")]
         [HttpGet]
         public IActionResult AnkaraPage()
         {
